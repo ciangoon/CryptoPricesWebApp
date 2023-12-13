@@ -1,0 +1,164 @@
+/* webpage body style */
+html, body {
+    height: 100%;
+    background-color: #1b1b1b;
+    color: rgb(233, 233, 233);
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* header style */
+h1 {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
+    background-color: #4d07f0fd;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+    vertical-align: middle;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* table style */
+table {
+    width: 100%;
+    font-family: sans-serif;
+    font-size: 14px;
+    border-collapse: collapse;
+    border-radius: 5px;
+    margin: 0 auto;
+}
+  
+th, td {
+    border: none;
+    padding: 15px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-size: 25px;
+}
+
+tr {
+    background-color: #1b1b1b;
+}
+
+td:first-child {
+    font-weight: bold;
+  }
+
+.crypto-name-and-logo {
+    display: flex;
+    align-items: center;
+}
+
+.crypto-name {
+    margin-left: 20px;
+}
+
+.crypto-logo {
+    max-width: 30px;
+    max-height: 30px;
+    height: auto; /* Maintain aspect ratio */
+    /*margin-left: 20px;*/
+}
+
+/* chart style */
+#chart-container {
+    margin: auto;
+    position: relative;
+    color:#1b1b1b;
+    background-color: #1b1b1b;
+}
+
+/* dropdown list style */
+select {
+    font-weight: bold;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1em;
+    text-align: center;
+    margin-top: 10px;
+    color: #ffffff;
+    background-color: #1b1b1b;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    cursor: pointer;
+    padding-left: 10px;
+    padding-right: 10px; /* Adjust this to add padding on the right side of the select */
+    background-position-x: calc(100% - 10px); /* Adjust the X position to move the arrow closer to the text */
+    background-position-y: 50%; /* Center the arrow vertically */
+    background-size: 12px; /* Adjust the size of the arrow as needed */
+}
+
+.update-granularity-dropdown {
+    margin-left: 15%;
+}
+
+
+/* chart canvas style */
+canvas {
+    position: relative;
+    margin-left: 20px;
+    margin-right: 50px;
+    max-height: 70vh;
+    width: 80vw;
+    height: 80vh;
+    color: #1b1b1b;
+    background-color: #1b1b1b;
+}
+
+/* dynamic price display style */
+.price-label {
+    font-weight: bold;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1em;
+    text-align: center;
+    margin-top: 0px;
+    color: #858585;
+
+}
+.price-display {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 2em;
+    text-align: center;
+    margin-top: 10px;
+    color: #ffffff;
+}
+
+/* button styles */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+    margin-top: 5%;
+}
+
+.update-date-buttons {
+    display: flex;
+    vertical-align: top; /* Aligns the tops of the two button groups */
+    padding-right: 3%;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.update-date-button {
+    font-size: 14px;
+    margin: 0 5px;
+    background-color: #1b1b1b;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+    transition: background-color 0.3s ease;
+}
+
+button.update-date-button.active {
+    background-color: #0a82f1; /* Change to desired color on click */
+}

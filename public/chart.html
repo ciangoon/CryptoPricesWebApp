@@ -1,0 +1,49 @@
+<!-- public/chart.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cryptocurrency Chart</title>
+</head>
+<body>
+  <!-- Dynamic price display-->
+  <div id="priceLabel" class="price-label">Price</div>
+  <div id="priceDisplay" class="price-display"></div>
+
+  <!-- Place both in a container to align them side by side -->
+  <div class="button-container">
+    <!-- Granularity Dropdown -->
+    <div class="update-granularity-dropdown">
+      <select id="granularitySelect" class="update-granularity-select">
+        <option value="" selected disabled>Granularity</option>
+        <option value="60">1 minute</option>
+        <option value="300">5 minutes</option>
+        <option value="900">15 minutes</option>
+        <option value="3600">1 hour</option>
+        <option value="21600">6 hours</option>
+        <option value="86400">1 day</option>
+      </select>
+    </div>    
+
+    <!-- Date Range Buttons -->
+    <div class="update-date-buttons">
+      <button class="update-date-button" date-range="1h">1H</button>
+      <button class="update-date-button" date-range="1d">1D</button>
+      <button class="update-date-button active" date-range="1w">1W</button>
+      <button class="update-date-button" date-range="1m">1M</button>
+      <button class="update-date-button" date-range="1y">1Y</button>
+      <button class="update-date-button" date-range="all">ALL</button>
+    </div>
+  </div>
+
+  <!-- Chart Display-->
+  <canvas id="coinbaseChart"></canvas>
+  <div id="chart-container">
+    <canvas id="coinbaseChart"></canvas>
+  </div>
+  <script type="module" src="../displaychart.js"></script>
+</body>
+</html>
