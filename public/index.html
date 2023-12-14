@@ -4,27 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cryptocurrency Price Tracker</title>
+  <title>Crypto Price Tracker</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
 </head>
 <body>
-  <h1>Crypto Price Tracker</h1>
-  <table id="tradingPairsTable">
-    <thead>
-      <tr>
-        <th>Code</th>
-        <th>Chart</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- <tr>
-        <td>Bitcoin</td>
-        <td>BTC</td>
-        <td><button type="button" class="view-chart" data-symbol="BTC">View</button></td>
-      </tr> -->
-    </tbody>
-  </table>
+  <h1>Into The Crypto-Verse...</h1>
+  <h2>Select a digital asset to view its charts</h2>
+  <div class="search-container">
+    <form action="/search" method="get" class="search-bar">
+        <i class="fas fa-search search-icon"></i>
+        <input type="search" id="site-search" name="q" placeholder="Search for an asset" aria-label="Search through site content">
+        <button type="submit" class="search-button">
+        </button>
+    </form>
+  </div>
+  <div id="tradingPairsGrid"></div>
   <script type="module" src="../main.js"></script>
 </body>
 </html>

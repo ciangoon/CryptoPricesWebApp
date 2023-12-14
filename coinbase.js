@@ -21,16 +21,17 @@ class CoinbaseExchange extends Exchange {
         // Calculate the number of milliseconds in one granularity unit
         const granularityMs = granularity * 1000;
         const end = new Date().toISOString();
+        console.log("ISOString", end);
         const startTime = new Date(start).getTime();
         const endTime = new Date(end).getTime();
-        
+        console.log("getTime", endTime);
         // Define the URL for the API call
         const baseUrl = `https://api.exchange.coinbase.com/products/${productId}/candles?granularity=${granularity}&start=START_PLACEHOLDER&end=END_PLACEHOLDER`;
 
         // Maximum time range that can be covered in one request (300 candles)
         const maxRange = granularityMs * 300;
-
-        let candleData = [];
+        
+        let segmentPromises = [];
 
         // Loop through the time range in chunks
         for (let segmentStart = startTime; segmentStart < endTime; segmentStart += maxRange) {
@@ -39,14 +40,30 @@ class CoinbaseExchange extends Exchange {
             const segmentStartISO = new Date(segmentStart).toISOString();
             const segmentEndISO = new Date(segmentEnd).toISOString();
             const segmentUrl = baseUrl.replace('START_PLACEHOLDER', segmentStartISO).replace('END_PLACEHOLDER', segmentEndISO);
-            console.log(segmentUrl);
-            const segmentData = await this.makeAPICall(segmentUrl);
+            
+            // const segmentData = await this.makeAPICall(segmentUrl);
+            // Instead of awaiting here, push the promise into the array
+            segmentPromises.push(this.makeAPICall(segmentUrl));
+            
             // Have to reverse segmentData as API returns data in reverse chronological order :(
-            segmentData.reverse();
+            // segmentData.reverse();
+
             // Append the data from this segment to the end of candleData
-            candleData.push(...segmentData);
+            // candleData.push(...segmentData);
             
         }
+        // Resolve all segment promises in parallel
+        const allSegments = await Promise.all(segmentPromises);
+
+        let candleData = [];
+        allSegments.forEach(segmentData => {
+            // Reverse segmentData as API returns data in reverse chronological order
+            segmentData.reverse();
+
+            // Append the data from this segment to the end of candleData
+            candleData.push(...segmentData);
+        });
+
         return candleData;
     }   
 }

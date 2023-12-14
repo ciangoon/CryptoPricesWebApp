@@ -7,7 +7,7 @@ const currencySymbols = {
     "BTC": "₿",
     "ETH": "Ξ",
     "GBP": "£",
-    "USDC": "$", 
+    "USDC": "USDC", 
     "DAI": "DAI",
     "USDT": "₮"  
 };
@@ -84,9 +84,17 @@ async function renderChart(productId) {
                 }
             }
         };
-        // Store the last hovered price
-        let lastHoveredPrice = ''; 
+
+        // Currency symbol taken from hashmap
         let symbol = currencySymbols[quoteCurrency];
+
+        // Store the last hovered price, set to most recent price by default
+        let lastHoveredPrice = `${symbol} ${new Intl.NumberFormat('en-US', { 
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 8 
+        }).format(processedData[processedData.length - 1].y)}`;
+        // Display this when chart renders
+        document.getElementById('priceDisplay').textContent = lastHoveredPrice;
 
         const ctx = document.getElementById('coinbaseChart').getContext('2d');
         myChart = new Chart(ctx, {
@@ -109,7 +117,8 @@ async function renderChart(productId) {
                 plugins: {
                     tooltip: {
                         enabled: true,
-                        mode: 'nearest',
+                        mode: 'index',
+                        //mode: 'nearest',
                         intersect: false,
                         callbacks: {
                             label: function(context) {
@@ -239,6 +248,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 case '1y':
                     startDate = new Date(endDate);
                     startDate.setFullYear(startDate.getFullYear() - 1); // 1 year
+                    break;
+                case '5y':
+                    startDate = new Date(endDate);
+                    startDate.setFullYear(startDate.getFullYear() - 5); // 5 years 
                     break;
                 case 'all':
                     startDate = new Date(0); // All time 
