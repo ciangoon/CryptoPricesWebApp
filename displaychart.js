@@ -46,13 +46,79 @@ async function renderChart(productId) {
     try {
         // Update the page title to include the trading pair
         document.title = `${productId} Chart`;
+        
+        // Assuming the base currency is the first part of the productId
+        const baseCurrency = productId.split('-')[0]; 
 
         // Instantiate the CoinbaseExchange class to execute fetchCandlestickData()
         const exchange = new CoinbaseExchange();
+
+        // Populate the coin info
+        const coinInfo = document.querySelector('.coin-info');
+        coinInfo.innerHTML = ''; // Clear existing content
+
+        // Image 
+        const coinImage = document.createElement('img');
+        coinImage.src = `../images/${baseCurrency}.png`;
+        coinImage.alt = `${baseCurrency} image`;
+        coinImage.className = 'coin-image';
+        coinInfo.appendChild(coinImage);
+
+        // Full name
+        // Retrieve from API then find the full name for the current base currency
+        const fullNamesData = await exchange.makeAPICall('https://api.pro.coinbase.com/currencies');
+        const fullNameData = fullNamesData.find(currency => currency.id === baseCurrency).name;
+        const fullName = document.createElement('div');
+        fullName.className = 'coin-name';
+        fullName.textContent = fullNameData;
+        coinInfo.appendChild(fullName);
+
+        // Abbreviation
+        const abbreviation = document.createElement('div');
+        abbreviation.className = 'coin-abbreviation';
+        abbreviation.textContent = baseCurrency;
+        coinInfo.appendChild(abbreviation);
+
+        // Fetch the trading pairs for this base currency
+        const responseData = await exchange.makeAPICall(`https://api.exchange.coinbase.com/products`);
+
+        // Filter pairs that match the baseCurrency and extract quote currencies
+        const quoteCurrencies = responseData
+            .filter(pair => pair.base_currency === baseCurrency)
+            .map(pair => pair.id.split('-')[1]) // Extract the quote currency
+            .filter((value, index, self) => self.indexOf(value) === index); // Deduplicate
+
+        // Create and populate the dropdown menu
+        const dropdownContainer = document.querySelector('.update-quote-currency-dropdown');
+        const dropdown = document.createElement('select');
+        dropdown.className = 'currency-select';
+
+        // Populate dropdown with quote currencies
+        quoteCurrencies.forEach(quoteCurrency => {
+            const option = document.createElement('option');
+            option.value = quoteCurrency;
+            option.textContent = quoteCurrency;
+            if (productId.endsWith(quoteCurrency)) {
+                option.selected = true;
+            }
+            dropdown.appendChild(option);
+        });
+
+        // Event listener for dropdown changes
+        dropdown.addEventListener('change', function() {
+            const selectedQuoteCurrency = this.value;
+            const newProductId = `${baseCurrency}-${selectedQuoteCurrency}`;
+            window.location.href = `/chart.html?product_id=${newProductId}`;
+        });
+
+        // Clear existing content and add the new dropdown
+        dropdownContainer.innerHTML = '';
+        dropdownContainer.appendChild(dropdown);
+        
+        // Get data for chart
         // Set default startDate to 1 week and granularity to 1 hour 
         const candlestickData = await exchange.fetchCandlestickData(productId,currentGranularity,currentStartDate);
 
-        // Process the data for Chart.js
         // Data format is [timestamp, price_low, price_high, price_open, price_close]
         const processedData = candlestickData.map(d => {
             return {
@@ -115,6 +181,9 @@ async function renderChart(productId) {
                 maintainAspectRatio: true,
                 responsive: true,
                 plugins: {
+                    legend: {
+                        display: false
+                    },
                     tooltip: {
                         enabled: true,
                         mode: 'index',

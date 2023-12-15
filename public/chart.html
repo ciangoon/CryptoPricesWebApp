@@ -9,6 +9,9 @@
   <title>Cryptocurrency Chart</title>
 </head>
 <body>
+  <!-- Coin Info [Logo, Name, Abbreviation] for the current chart-->
+  <div class="coin-info"></div>
+
   <!-- Dynamic price display-->
   <div id="priceLabel" class="price-label">Price</div>
   <div id="priceDisplay" class="price-display"></div>
@@ -18,15 +21,18 @@
     <!-- Granularity Dropdown -->
     <div class="update-granularity-dropdown">
       <select id="granularitySelect" class="update-granularity-select">
-        <option value="" selected disabled>Granularity</option>
+        <option value="" disabled>Granularity</option>
         <option value="60">1 minute</option>
         <option value="300">5 minutes</option>
         <option value="900">15 minutes</option>
-        <option value="3600">1 hour</option>
+        <option value="3600" selected>1 hour</option>
         <option value="21600">6 hours</option>
         <option value="86400">1 day</option>
       </select>
     </div>    
+    
+    <!-- Quote Currency Button -->
+    <div class="update-quote-currency-dropdown"></div>
 
     <!-- Date Range Buttons -->
     <div class="update-date-buttons">

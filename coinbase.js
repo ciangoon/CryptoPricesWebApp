@@ -1,19 +1,23 @@
 import Exchange from './exchange.js';
 
 class CoinbaseExchange extends Exchange {
+    // Define global trading pairs map
+    // key: base currency i.e BTC | value: array of trading pair ids [BTC-USD, BTC-EUR, BTC-GBP]
+    // static globalTradingPairsMap = new Map();
+
     // Retrieves all available trading pairs from the API
     async fetchTradingPairs() {
         const data = await this.makeAPICall('https://api.exchange.coinbase.com/products');
-        const hashMap = new Map();
+        const tradingPairsMap = new Map();
         // key: base currency i.e BTC 
         // value: array of trading pair ids [BTC-USD, BTC-EUR, BTC-GBP]
         data.forEach(pair => {
-            if (!hashMap.has(pair.base_currency)) {
-                hashMap.set(pair.base_currency, []);
+            if (!tradingPairsMap.has(pair.base_currency)) {
+                tradingPairsMap.set(pair.base_currency, []);
             }
-            hashMap.get(pair.base_currency).push(pair.id);
+            tradingPairsMap.get(pair.base_currency).push(pair.id);
         });
-        return hashMap;
+        return tradingPairsMap;
     }
 
     // Retrieves candlestick data for a given trading pair
@@ -21,10 +25,8 @@ class CoinbaseExchange extends Exchange {
         // Calculate the number of milliseconds in one granularity unit
         const granularityMs = granularity * 1000;
         const end = new Date().toISOString();
-        console.log("ISOString", end);
         const startTime = new Date(start).getTime();
         const endTime = new Date(end).getTime();
-        console.log("getTime", endTime);
         // Define the URL for the API call
         const baseUrl = `https://api.exchange.coinbase.com/products/${productId}/candles?granularity=${granularity}&start=START_PLACEHOLDER&end=END_PLACEHOLDER`;
 
@@ -67,6 +69,9 @@ class CoinbaseExchange extends Exchange {
         return candleData;
     }   
 }
+
+// populate the hashmap
+// CoinbaseExchange.prototype.fetchTradingPairs();
 
 export default CoinbaseExchange;
 

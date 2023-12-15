@@ -1,7 +1,7 @@
 /* webpage body style */
-html, body {
+html, head, body {
     height: 100%;
-    background-color: #1a1a1a;
+    background-color: #1b1b1b;
     color: rgb(233, 233, 233);
     font-family: 'Trebuchet MS', sans-serif;
     margin: 0;
@@ -18,6 +18,7 @@ h1 {
     text-align: center;
     vertical-align: middle;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: default;
 }
 
 /* below header style */
@@ -27,6 +28,7 @@ h2 {
     color: #fff;
     text-align: center;
     vertical-align: middle;
+    cursor: default;
 }
 
 /* search box style */
@@ -84,90 +86,55 @@ input[type="search"]::-webkit-search-results-decoration {
 /* grid style */
 #tradingPairsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust the minmax values as needed */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 3rem;
     padding: 3rem;
 }
 
 /* card style */
 .currency-card {
-    border: 1px solid #ccc;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    background-color: #f8f8f8; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     display: flex;
-    justify-content: center;
     align-items: center;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    background-color: white; /* Example background color */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Example shadow */
+    border-radius: 4px; /* Rounded corners */
+    width: 250px; /* Set a fixed width */
+    height: 100px; /* Set a fixed height */
+    overflow: hidden; /* Ensures content does not overflow */
 }
+
 .currency-card:hover {
     background-color: #f2f2f2b7; 
 }
-.currency-icon {
-    max-width: 30px;
-    max-height: 30px;
-    height: auto; /* Maintain aspect ratio */
-    margin-right: 20px;
+.currency-image {
+    max-width: 100%; /* Ensure image does not exceed card width */
+    max-height: 80px; /* Set a max-height for the image */
+    margin-right: 10px; /* Space between image and text */
+    object-fit: contain; /* Keep aspect ratio */
 }
-.currency-name {
+.currency-text {
+    display: flex;
+    flex-direction: column;
+    align-items: left; /* Center align the text vertically */
+    margin-left: 15px;
+}
+.currency-full-name {
     font-weight: bold;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
-    font-size: 1em;
-    text-align: center;
-    margin-top: 0px;
-    color: #858585;
+    font-size: 1.2em;
+    margin-right: 5px;
+    color: #e6e6e6;
 }
 .currency-abbreviation {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
-    font-size: 0.8em;
-    text-align: center;
-    margin-top: 10px;
-    color: #ffffff;
-}
-
-/* table style */
-table {
-    width: 100%;
-    font-family: sans-serif;
-    font-size: 14px;
-    border-collapse: collapse;
-    border-radius: 5px;
-    margin: 0 auto;
-}
-  
-th, td {
-    border: none;
-    padding: 15px;
-    text-align: center;
-}
-
-th {
-    background-color: #f2f2f2;
-    font-size: 25px;
-}
-
-tr {
-    background-color: #1b1b1b;
-}
-
-td:first-child {
     font-weight: bold;
-  }
-
-.crypto-name-and-logo {
-    display: flex;
-    align-items: center;
-}
-
-.crypto-name {
-    margin-left: 20px;
-}
-
-.crypto-logo {
-    max-width: 30px;
-    max-height: 30px;
-    height: auto; /* Maintain aspect ratio */
-    /*margin-left: 20px;*/
+    opacity: 0.7;
+    font-size: 1em;
+    margin-top: 10px;
+    color: #c0c0c0;
 }
 
 /* chart style */
@@ -202,6 +169,10 @@ select {
     margin-left: 15%;
 }
 
+.update-quote-currency-dropdown {
+    margin-left: 20px;
+}
+
 
 /* chart canvas style */
 canvas {
@@ -214,6 +185,44 @@ canvas {
     color: #1b1b1b;
     background-color: #1b1b1b;
 }
+/* coin info style */
+.coin-info {
+    position: absolute; /* Position it relative to the browser window */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    display: flex; /* Use flexbox for layout */
+    align-items: center; /* Center items vertically */
+    padding: 10px; /* Add some padding */
+    background-color: #1b1b1b; /* Background color of the coin info box */
+    border-radius: 8px; /* Rounded corners */
+    margin-top: 5vh;
+    margin-left: 10vw;
+  }
+  
+  /* Image of the coin */
+  .coin-image {
+    width: 70px; /* Set a fixed width for the image */
+    height: 70px; /* Set a fixed height for the image */
+    border-radius: 50%; /* Make it round */
+    margin-right: 10px; /* Add margin to the right of the image */
+    object-fit: cover; /* Ensure the image covers the area without stretching */
+  }
+  
+  /* Name of the coin */
+  .coin-name {
+    font-size: 2em; /* Size of the coin name */
+    font-weight: bold; /* Make the font bold */
+    margin-bottom: 4px; /* Add some space below the name */
+    margin-left: 2vh;
+  }
+  
+  /* Abbreviation of the coin */
+  .coin-abbreviation {
+    font-size: 12px; /* Size of the abbreviation */
+    color: #666; /* A lighter color for the abbreviation */
+    margin-left: 1vh;
+  }
+  
 
 /* dynamic price display style */
 .price-label {
@@ -221,7 +230,7 @@ canvas {
     font-family: 'Open Sans', sans-serif;
     font-size: 1em;
     text-align: center;
-    margin-top: 0px;
+    margin-top: 5vh;
     color: #858585;
 
 }
