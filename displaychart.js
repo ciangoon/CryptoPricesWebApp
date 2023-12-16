@@ -162,6 +162,7 @@ async function renderChart(productId) {
         // Display this when chart renders
         document.getElementById('priceDisplay').textContent = lastHoveredPrice;
 
+        // Finally, render the chart
         const ctx = document.getElementById('coinbaseChart').getContext('2d');
         myChart = new Chart(ctx, {
             type: 'line', // Can change to 'bar' or other types

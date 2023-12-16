@@ -1,24 +1,56 @@
 /* webpage body style */
-html, head, body {
+body, html {
     height: 100%;
-    background-color: #1b1b1b;
+    background-color: #1b1b1b;;
     color: rgb(233, 233, 233);
     font-family: 'Trebuchet MS', sans-serif;
     margin: 0;
     padding: 0;
 }
 
-/* header style */
-h1 {
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif; 
+/* main page header style */
+.main-page-header {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
     font-weight: bold;
-    background-color: #010005;
+    font-size: 2.5em; /* Larger font size */
     color: #fff;
-    padding: 10px 0;
+    background-color: #1b1b1b;
+    padding: 20px 0; /* Increased padding for a more spacious look */
+    margin: 0; /* Remove default margin */
     text-align: center;
-    vertical-align: middle;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* More pronounced shadow for depth */
+    border-bottom: 3px solid #f7f7f7; /* Adding a border for a touch of color */
+    text-transform: uppercase; /* Make the text uppercase for impact */
+    letter-spacing: 1.5px; /* Increase letter spacing for a modern look */
+    text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); /* Text shadow for a subtle 3D effect */
     cursor: default;
+}
+/* chart page header style */
+.chart-page-header {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+    font-weight: bold;
+    font-size: 0.8em; 
+    color: #fff;
+    background-color: #1b1b1b;
+    padding-top: 7px;
+    padding-bottom: 6px;
+    padding: 1; /* Increased padding for a more spacious look */
+    margin: 0; /* Remove default margin */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* More pronounced shadow for depth */
+    border-bottom: 3px solid #f7f7f7; /* Adding a border for a touch of color */
+    text-transform: uppercase; /* Make the text uppercase for impact */
+    letter-spacing: 1.5px; /* Increase letter spacing for a modern look */
+    text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); /* Text shadow for a subtle 3D effect */
+    cursor: default;
+}
+
+/* coinbase logo style */
+.coinbase-logo {
+    height: 1em; 
+    vertical-align: middle; /* Aligns the logo with the middle of the text */
+    margin-left: 5px; /* Adds a small space between the text and the logo */
+    margin-top: -3.5px;
 }
 
 /* below header style */
@@ -83,11 +115,27 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
     display: none;
 }
+/* sort button style */
+.sort-container {
+    top: 0;
+    right: 0;
+    position: absolute;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: right; /* Center vertically */
+    margin-top: 130px;
+    margin-right: 50px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', Arial, sans-serif;
+    font-size: 1em;
+}
+
+
 /* grid style */
 #tradingPairsGrid {
+    background-color: #1b1b1b;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 3rem;
+    gap: 5rem;
     padding: 3rem;
 }
 
@@ -96,10 +144,10 @@ input[type="search"]::-webkit-search-results-decoration {
     display: flex;
     align-items: center;
     padding: 10px;
-    margin: 5px;
+    margin: 10px;
     cursor: pointer;
     background-color: white; /* Example background color */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Example shadow */
+    box-shadow: 0 5px 4px rgba(0.3, 0.3, 0.3, 0.3); /* Example shadow */
     border-radius: 4px; /* Rounded corners */
     width: 250px; /* Set a fixed width */
     height: 100px; /* Set a fixed height */
@@ -149,10 +197,10 @@ input[type="search"]::-webkit-search-results-decoration {
 select {
     font-weight: bold;
     font-family: 'Open Sans', sans-serif;
-    font-size: 1em;
+    font-size: 14px;
     text-align: center;
     margin-top: 10px;
-    color: #ffffff;
+    color: #d8d8d8;
     background-color: #1b1b1b;
     border: none;
     border-radius: 30px;
@@ -172,7 +220,6 @@ select {
 .update-quote-currency-dropdown {
     margin-left: 20px;
 }
-
 
 /* chart canvas style */
 canvas {
@@ -195,33 +242,33 @@ canvas {
     padding: 10px; /* Add some padding */
     background-color: #1b1b1b; /* Background color of the coin info box */
     border-radius: 8px; /* Rounded corners */
-    margin-top: 5vh;
+    margin-top: 9vh;
     margin-left: 10vw;
   }
   
-  /* Image of the coin */
-  .coin-image {
+/* Image of the coin */
+.coin-image {
     width: 70px; /* Set a fixed width for the image */
     height: 70px; /* Set a fixed height for the image */
     border-radius: 50%; /* Make it round */
     margin-right: 10px; /* Add margin to the right of the image */
     object-fit: cover; /* Ensure the image covers the area without stretching */
-  }
-  
-  /* Name of the coin */
-  .coin-name {
+}
+
+/* Name of the coin */
+.coin-name {
     font-size: 2em; /* Size of the coin name */
     font-weight: bold; /* Make the font bold */
     margin-bottom: 4px; /* Add some space below the name */
     margin-left: 2vh;
-  }
-  
-  /* Abbreviation of the coin */
-  .coin-abbreviation {
+}
+
+/* Abbreviation of the coin */
+.coin-abbreviation {
     font-size: 12px; /* Size of the abbreviation */
     color: #666; /* A lighter color for the abbreviation */
     margin-left: 1vh;
-  }
+}
   
 
 /* dynamic price display style */
@@ -248,6 +295,9 @@ canvas {
     justify-content: space-between;
     /* align-items: center; */
     margin-top: 5%;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+    font-size: 1em;
+    color: #ffffff
 }
 
 .update-date-buttons {
@@ -262,7 +312,7 @@ canvas {
     font-size: 14px;
     margin: 0 5px;
     background-color: #1b1b1b;
-    color: #fff;
+    color: #d8d8d8;
     border: none;
     padding: 10px 20px;
     border-radius: 30px;

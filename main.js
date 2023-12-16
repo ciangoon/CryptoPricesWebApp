@@ -21,11 +21,14 @@ function populateGrid(hashMap, fullNamesMap) {
     });
 } 
 
-// Function to create a currency card
+// Create a currency card
 function createCurrencyCard(baseCurrency, fullName, defaultPair) {
     // Create the card div element
     const card = document.createElement('div');
     card.className = 'currency-card';
+    card.setAttribute('data-full-name', fullName); // Set the full name as an attribute
+    card.setAttribute('data-abbreviation', baseCurrency); // Set the abbreviation as an attribute
+    card.setAttribute('data-market-cap', marketCap); // Set the market cap as an attribute (default to 0
 
     // Create and append the image element
     const image = document.createElement('img');
@@ -65,6 +68,54 @@ function createCurrencyCard(baseCurrency, fullName, defaultPair) {
 
     return card;
 }
+
+// Filter cards based on search box
+function filterCards() {
+    const searchInput = document.getElementById('site-search').value.toLowerCase();
+    const cards = document.querySelectorAll('.currency-card');
+
+    cards.forEach(card => {
+      const fullName = card.getAttribute('data-full-name').toLowerCase();
+      const abbreviation = card.getAttribute('data-abbreviation').toLowerCase();
+      // Filter based on full name or abbreviation, if search input is empty show all cards
+      if (fullName.includes(searchInput) || abbreviation.includes(searchInput) || searchInput === '') {
+        card.style.display = ''; // Show the card
+      } else {
+        card.style.display = 'none'; // Hide the card
+      }
+    });
+}
+
+// Sort by dropdown list
+function sortCards() {
+    const sortValue = document.getElementById('sort-select').value;
+    const gridContainer = document.getElementById('tradingPairsGrid');
+    let cards = Array.from(gridContainer.querySelectorAll('.currency-card'));
+
+    switch(sortValue) {
+        case 'marketCap':
+            // Assuming each card has a data attribute for market cap (data-market-cap)
+            cards.sort((a, b) => parseInt(b.getAttribute('data-market-cap')) - parseInt(a.getAttribute('data-market-cap')));
+            break;
+        case 'alpha':
+            // Sorting by the full name of the currency
+            cards.sort((a, b) => a.getAttribute('data-full-name').localeCompare(b.getAttribute('data-full-name')));
+            break;
+        case 'reverseAlpha':
+            cards.sort((a, b) => b.getAttribute('data-full-name').localeCompare(a.getAttribute('data-full-name')));
+            break;
+    }
+
+    // Clear the grid and append sorted cards
+    gridContainer.innerHTML = '';
+    cards.forEach(card => gridContainer.appendChild(card));
+}
+
+// Event listener for the sort dropdown
+document.getElementById('sort-select').addEventListener('change', sortCards);
+
+// Event listener for the search input
+document.getElementById('site-search').addEventListener('input', filterCards);
 
 // Instantiate the CoinbaseExchange class
 const exchange = new CoinbaseExchange();

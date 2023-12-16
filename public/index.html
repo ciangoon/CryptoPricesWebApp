@@ -10,17 +10,30 @@
   <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
 </head>
 <body>
-  <h1>Into The Crypto-Verse...</h1>
-  <h2>Select a digital asset to view its charts</h2>
-  <div class="search-container">
-    <form action="/search" method="get" class="search-bar">
-        <i class="fas fa-search search-icon"></i>
-        <input type="search" id="site-search" name="q" placeholder="Search for an asset" aria-label="Search through site content">
-        <button type="submit" class="search-button">
-        </button>
-    </form>
+  <div class="background-image-container">
+  <h1 class="main-page-header">Into The Crypto-Verse...</h1>
+    <h2>Select a digital asset to view its charts</h2>
+      <!-- Search bar-->
+      <div class="search-container">
+        <form action="/search" method="get" class="search-bar">
+          <i class="fas fa-search search-icon"></i>
+          <input type="search" id="site-search" name="q" placeholder="Search for an asset" aria-label="Search through site content">
+          <button type="submit" class="search-button">
+          </button>
+        </form>
+      </div>
+      <!-- Sort by drop down-->
+      <div class="sort-container">
+        <select id="sort-select">
+            <option value="" disabled selected>Sort By</option>
+            <option value="marketCap">Market Cap</option>
+            <option value="alpha">Alphabetical ↑</option>
+            <option value="reverseAlpha">Alphabetical ↓</option>
+        </select>
+      </div>
+    <!-- Grid-->
+    <div id="tradingPairsGrid"></div>
   </div>
-  <div id="tradingPairsGrid"></div>
   <script type="module" src="../main.js"></script>
 </body>
 </html>
