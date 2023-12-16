@@ -7,7 +7,6 @@
   <title>Crypto Price Tracker</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
 </head>
 <body>
   <div class="background-image-container">
@@ -26,11 +25,16 @@
       <div class="sort-container">
         <select id="sort-select">
             <option value="" disabled selected>Sort By</option>
-            <option value="marketCap">Market Cap</option>
+            <option value="priceAsc">Price ↑</option>
+            <option value="priceDesc">Price ↓</option>
             <option value="alpha">Alphabetical ↑</option>
             <option value="reverseAlpha">Alphabetical ↓</option>
         </select>
       </div>
+
+    <!-- Loading Indicator to enchance user experience-->
+    <div id="loadingIndicator" class="loading-indicator"></div>
+
     <!-- Grid-->
     <div id="tradingPairsGrid"></div>
   </div>

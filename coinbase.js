@@ -1,10 +1,6 @@
 import Exchange from './exchange.js';
 
 class CoinbaseExchange extends Exchange {
-    // Define global trading pairs map
-    // key: base currency i.e BTC | value: array of trading pair ids [BTC-USD, BTC-EUR, BTC-GBP]
-    // static globalTradingPairsMap = new Map();
-
     // Retrieves all available trading pairs from the API
     async fetchTradingPairs() {
         const data = await this.makeAPICall('https://api.exchange.coinbase.com/products');
@@ -43,16 +39,8 @@ class CoinbaseExchange extends Exchange {
             const segmentEndISO = new Date(segmentEnd).toISOString();
             const segmentUrl = baseUrl.replace('START_PLACEHOLDER', segmentStartISO).replace('END_PLACEHOLDER', segmentEndISO);
             
-            // const segmentData = await this.makeAPICall(segmentUrl);
             // Instead of awaiting here, push the promise into the array
             segmentPromises.push(this.makeAPICall(segmentUrl));
-            
-            // Have to reverse segmentData as API returns data in reverse chronological order :(
-            // segmentData.reverse();
-
-            // Append the data from this segment to the end of candleData
-            // candleData.push(...segmentData);
-            
         }
         // Resolve all segment promises in parallel
         const allSegments = await Promise.all(segmentPromises);
@@ -69,9 +57,6 @@ class CoinbaseExchange extends Exchange {
         return candleData;
     }   
 }
-
-// populate the hashmap
-// CoinbaseExchange.prototype.fetchTradingPairs();
 
 export default CoinbaseExchange;
 

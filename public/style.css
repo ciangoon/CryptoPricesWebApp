@@ -7,7 +7,15 @@ body, html {
     margin: 0;
     padding: 0;
 }
-
+/* loading indicator style */
+.loading-indicator {
+    text-align: center;
+    font-size: 1em;
+    margin-top: 20px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+    cursor: default;
+    color: #d1d1d1;
+}
 /* main page header style */
 .main-page-header {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;

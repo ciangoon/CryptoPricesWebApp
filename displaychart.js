@@ -35,36 +35,38 @@ function formatDate(date) {
 // Define myChart globally so can be accessed by updateChart()
 let myChart;
 
-// initialise global granularity variable and global start variable
-// so can be accessed by both event listeners
-let currentGranularity = 3600; // Default to 1 hour
+// Initialise global granularity variable and global start variable
+// So can be accessed by both event listeners
+let currentGranularity = 86400; // Default to 1 day
 let currentEndDate = new Date();
-let currentStartDate = new Date(currentEndDate.getTime() - 604800000).toISOString(); // Default to 1 week
-
+let currentStartDate = new Date(currentEndDate);
+currentStartDate.setFullYear(currentStartDate.getFullYear() - 1); // Default to 1 year
+currentStartDate = currentStartDate.toISOString(); // Convert to ISO string
+                    
 // Renders the chart using Chart.js
 async function renderChart(productId) {
     try {
         // Update the page title to include the trading pair
         document.title = `${productId} Chart`;
         
-        // Assuming the base currency is the first part of the productId
+        // Base currency is the first part of the productId
         const baseCurrency = productId.split('-')[0]; 
 
-        // Instantiate the CoinbaseExchange class to execute fetchCandlestickData()
+        // Instantiate the CoinbaseExchange class to use makeAPICall() method
         const exchange = new CoinbaseExchange();
 
         // Populate the coin info
         const coinInfo = document.querySelector('.coin-info');
         coinInfo.innerHTML = ''; // Clear existing content
 
-        // Image 
+        // Coin Image 
         const coinImage = document.createElement('img');
         coinImage.src = `../images/${baseCurrency}.png`;
         coinImage.alt = `${baseCurrency} image`;
         coinImage.className = 'coin-image';
         coinInfo.appendChild(coinImage);
 
-        // Full name
+        // Coin full name
         // Retrieve from API then find the full name for the current base currency
         const fullNamesData = await exchange.makeAPICall('https://api.pro.coinbase.com/currencies');
         const fullNameData = fullNamesData.find(currency => currency.id === baseCurrency).name;
@@ -73,7 +75,7 @@ async function renderChart(productId) {
         fullName.textContent = fullNameData;
         coinInfo.appendChild(fullName);
 
-        // Abbreviation
+        // Coin Abbreviation
         const abbreviation = document.createElement('div');
         abbreviation.className = 'coin-abbreviation';
         abbreviation.textContent = baseCurrency;
@@ -93,7 +95,7 @@ async function renderChart(productId) {
         const dropdown = document.createElement('select');
         dropdown.className = 'currency-select';
 
-        // Populate dropdown with quote currencies
+        // Populate dropdown so user can switch between currencies
         quoteCurrencies.forEach(quoteCurrency => {
             const option = document.createElement('option');
             option.value = quoteCurrency;
@@ -116,7 +118,7 @@ async function renderChart(productId) {
         dropdownContainer.appendChild(dropdown);
         
         // Get data for chart
-        // Set default startDate to 1 week and granularity to 1 hour 
+        // Default startDate = 1 year || Default granularity = 1 day 
         const candlestickData = await exchange.fetchCandlestickData(productId,currentGranularity,currentStartDate);
 
         // Data format is [timestamp, price_low, price_high, price_open, price_close]
@@ -153,13 +155,20 @@ async function renderChart(productId) {
 
         // Currency symbol taken from hashmap
         let symbol = currencySymbols[quoteCurrency];
-
         // Store the last hovered price, set to most recent price by default
-        let lastHoveredPrice = `${symbol} ${new Intl.NumberFormat('en-US', { 
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 8 
-        }).format(processedData[processedData.length - 1].y)}`;
-        // Display this when chart renders
+        let lastHoveredPrice = '';
+        // Checks for data to avoid errors when no data for chart
+        if (processedData.length === 0) {
+            symbol = '';
+            lastHoveredPrice = '0';
+        } else {
+            lastHoveredPrice = `${symbol} ${new Intl.NumberFormat('en-US', { 
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 8 
+            }).format(processedData[processedData.length - 1].y)}`;
+        }
+
+        // Display the price of the cryptocurrency when chart renders
         document.getElementById('priceDisplay').textContent = lastHoveredPrice;
 
         // Finally, render the chart

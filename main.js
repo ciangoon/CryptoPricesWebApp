@@ -1,34 +1,59 @@
 import CoinbaseExchange from './coinbase.js';
 
-// Dynamically populates landing page
-function populateGrid(hashMap, fullNamesMap) {
+// Appends a currency card to the grid
+function addCurrencyCard(baseCurrency, fullName, defaultPair, price) {
     const gridContainer = document.getElementById('tradingPairsGrid');
-    gridContainer.innerHTML = '';  // Clear the grid container
+    const currencyCard = createCurrencyCard(baseCurrency, fullName, defaultPair, price);
+    gridContainer.appendChild(currencyCard);
+}
 
-    Array.from(hashMap.keys()).sort().forEach(baseCurrency => {
-        const ids = hashMap.get(baseCurrency);  // [BTC-USD, BTC-EUR, BTC-GBP]
-        
-        // Set default trading pair to show USD prices if available
-        // Else show the first trading pair
-        const defaultPair = ids.includes(baseCurrency + '-USD') ? baseCurrency + '-USD' : ids[0];
+// Fetch prices for cryptocurrencies in batches from API URL
+async function fetchPricesInBatch(batch) {
+    return Promise.all(batch.map(baseCurrency =>
+        fetch(`https://api.exchange.coinbase.com/products/${baseCurrency}-USD/ticker`)
+            .then(response => response.ok ? response.json() : Promise.reject(`Error: ${response.status}`))
+            .then(data => [baseCurrency, data.price])
+            .catch(error => {
+                console.error(`Error fetching price for ${baseCurrency}:`, error);
+                return [baseCurrency, 0]; // Return price of 0 if there is an error
+            })
+    ));
+}
 
-        // Get the full name of the currency if available
-        const fullName = fullNamesMap[baseCurrency] || baseCurrency;
+// Builds currency cards and appends them to the grid as they are fetched
+async function populateGrid(tradingPairsMap, fullNamesMap, batchSize = 5) {
+    const pricesMap = new Map();
+    const baseCurrencies = Array.from(tradingPairsMap.keys());
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    loadingIndicator.textContent = `Loading assets 0/${baseCurrencies.length}`;
+    let loadedCount = 0;
 
-        // Populate the grid with currency cards
-        const currencyCard = createCurrencyCard(baseCurrency, fullName, defaultPair);
-        gridContainer.appendChild(currencyCard);
-    });
-} 
+    for (let i = 0; i < baseCurrencies.length; i += batchSize) {
+        const batch = baseCurrencies.slice(i, i + batchSize);
+        const prices = await fetchPricesInBatch(batch);
+        prices.forEach(([baseCurrency, price]) => {
+            pricesMap.set(baseCurrency, price);
+            const fullName = fullNamesMap[baseCurrency] || baseCurrency;
+            // Sets the card to open chart in USD if available otherwise the first trading pair
+            const defaultPair = tradingPairsMap.get(baseCurrency).find(p => p.endsWith('-USD')) || tradingPairsMap.get(baseCurrency)[0];
+            addCurrencyCard(baseCurrency, fullName, defaultPair, price);
+            loadedCount++;
+            loadingIndicator.textContent = `Loading assets ... ${loadedCount}/${baseCurrencies.length}`;
+        });
+    }
+
+    loadingIndicator.style.display = 'none'; // Hide loading indicator when done
+    return pricesMap;
+}
 
 // Create a currency card
-function createCurrencyCard(baseCurrency, fullName, defaultPair) {
+function createCurrencyCard(baseCurrency, fullName, defaultPair, price) {
     // Create the card div element
     const card = document.createElement('div');
     card.className = 'currency-card';
     card.setAttribute('data-full-name', fullName); // Set the full name as an attribute
     card.setAttribute('data-abbreviation', baseCurrency); // Set the abbreviation as an attribute
-    card.setAttribute('data-market-cap', marketCap); // Set the market cap as an attribute (default to 0
+    card.setAttribute('data-price', price); // Set the price as attribute to sort
 
     // Create and append the image element
     const image = document.createElement('img');
@@ -60,6 +85,20 @@ function createCurrencyCard(baseCurrency, fullName, defaultPair) {
     // Append the image and text container to the card
     card.appendChild(image);
     card.appendChild(textContainer);
+
+    // Append the price to the text container
+    const priceElement = document.createElement('div');
+    priceElement.className = 'currency-price';
+    // format price to use commas 
+    const formattedPrice = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6
+    }).format(price);
+    priceElement.textContent = formattedPrice;
+    textContainer.appendChild(priceElement);
+    
 
     // Event listener for when the card is clicked
     card.addEventListener('click', () => {
@@ -93,15 +132,20 @@ function sortCards() {
     let cards = Array.from(gridContainer.querySelectorAll('.currency-card'));
 
     switch(sortValue) {
-        case 'marketCap':
-            // Assuming each card has a data attribute for market cap (data-market-cap)
-            cards.sort((a, b) => parseInt(b.getAttribute('data-market-cap')) - parseInt(a.getAttribute('data-market-cap')));
+        case 'priceAsc':
+            // Sorting by price in ascending order
+            cards.sort((a, b) => parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price')));
+            break;
+        case 'priceDesc':
+            // Sorting by price in descending order
+            cards.sort((a, b) => parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price')));
             break;
         case 'alpha':
-            // Sorting by the full name of the currency
+            // Alphabetical order
             cards.sort((a, b) => a.getAttribute('data-full-name').localeCompare(b.getAttribute('data-full-name')));
             break;
         case 'reverseAlpha':
+            // Reverse alphabetical order
             cards.sort((a, b) => b.getAttribute('data-full-name').localeCompare(a.getAttribute('data-full-name')));
             break;
     }
@@ -120,19 +164,20 @@ document.getElementById('site-search').addEventListener('input', filterCards);
 // Instantiate the CoinbaseExchange class
 const exchange = new CoinbaseExchange();
 
-// Retrieve full names for each currency i.e BTC -> Bitcoin
+// This starts loading the page as soon as it is opened
+// First retrieves full names for each currency i.e BTC -> Bitcoin
 exchange.makeAPICall('https://api.pro.coinbase.com/currencies')
-  .then(data => {
+  .then(async data => {
     const fullNamesMap = data.reduce((map, currency) => {
       map[currency.id] = currency.name;
       return map;
     }, {});
-    // Fetch trading pairs and populate the grid
-    exchange.fetchTradingPairs().then(tradingPairsMap => {
-        populateGrid(tradingPairsMap, fullNamesMap);
-    }).catch(error => {
-        console.error(error);
-        // Handle the error appropriately
-    });
+
+    // Then, fetches trading pairs 
+    const tradingPairsMap = await exchange.fetchTradingPairs();
+
+    // Then, populates grid with currency cards as they are fetched
+    await populateGrid(tradingPairsMap, fullNamesMap);
+
   })
 .catch(error => console.error('Error fetching currency names:', error));

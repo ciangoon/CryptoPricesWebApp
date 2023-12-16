@@ -4,28 +4,10 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Ensures javascript files served from 'public' directory has correct content type header
-// app.use(express.static('public', {
-//   setHeaders: (res, filePath) => {
-//     if (path.extname(filePath) === '.js') {
-//       res.setHeader('Content-Type', 'application/javascript');
-//     }
-//   }
-// }));
-// console.log("path is", path);
-// // Ensures javascript files has correct content type header
-// app.use((req, res, next) => {
-//   if (path.extname(req.path).toLowerCase() === '.js') {
-//     res.setHeader('Content-Type', 'application/javascript');
-//   }
-//   next();
-// });
-
 app.use(express.static('public'));
 app.use('/images', express.static('images'));
 
-
-
+// Ensures javascript files served from 'public' directory has correct content type header
 app.use('/displaychart.js', (req, res, next) => {
   res.setHeader('Content-Type', 'application/javascript');
   next();
