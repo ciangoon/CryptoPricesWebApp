@@ -154,7 +154,7 @@ input[type="search"]::-webkit-search-results-decoration {
     padding: 10px;
     margin: 10px;
     cursor: pointer;
-    background-color: white; /* Example background color */
+    background-color: rgb(37, 37, 37); /* Example background color */
     box-shadow: 0 5px 4px rgba(0.3, 0.3, 0.3, 0.3); /* Example shadow */
     border-radius: 4px; /* Rounded corners */
     width: 250px; /* Set a fixed width */
@@ -163,7 +163,7 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 .currency-card:hover {
-    background-color: #f2f2f2b7; 
+    background-color: #2c2c2cb7; 
 }
 .currency-image {
     max-width: 100%; /* Ensure image does not exceed card width */
