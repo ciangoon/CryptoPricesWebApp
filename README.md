@@ -18,6 +18,7 @@ The terminal will output:
 Server is running on port 3000
 ```
 Open http://localhost:3000 to view it in the browser.
+Use Firefox or Chrome for the best experience.
 
 ## License
 
