@@ -42,139 +42,202 @@ let currentEndDate = new Date();
 let currentStartDate = new Date(currentEndDate);
 currentStartDate.setFullYear(currentStartDate.getFullYear() - 1); // Default to 1 year
 currentStartDate = currentStartDate.toISOString(); // Convert to ISO string
-                    
-// Renders the chart using Chart.js
-async function renderChart(productId) {
-    try {
-        // Update the page title to include the trading pair
-        document.title = `${productId} Chart`;
-        
-        // Base currency is the first part of the productId
-        const baseCurrency = productId.split('-')[0]; 
 
-        // Instantiate the CoinbaseExchange class to use makeAPICall() method
-        const exchange = new CoinbaseExchange();
+// Fetches chart data
+async function fetchChartData(productId, exchange, currentGranularity, currentStartDate) {
+    const candlestickData = await exchange.fetchCandlestickData(productId, currentGranularity, currentStartDate);
 
-        // Populate the coin info
-        const coinInfo = document.querySelector('.coin-info');
-        coinInfo.innerHTML = ''; // Clear existing content
+    // Data format is [timestamp, price_low, price_high, price_open, price_close]
+    return candlestickData.map(d => ({
+        x: new Date(d[0] * 1000),   // Convert UNIX timestamp to JavaScript Date object
+        y: d[4]                     // Closing price
+    }));
+}
 
-        // Coin Image 
-        const coinImage = document.createElement('img');
-        coinImage.src = `../images/${baseCurrency}.png`;
-        coinImage.alt = `${baseCurrency} image`;
-        coinImage.className = 'coin-image';
-        coinInfo.appendChild(coinImage);
+// Populate the coin info section
+async function populateCoinInfo(baseCurrency, exchange) {
+    const coinInfo = document.querySelector('.coin-info');
+    coinInfo.innerHTML = '';
 
-        // Coin full name
-        // Retrieve from API then find the full name for the current base currency
-        const fullNamesData = await exchange.makeAPICall('https://api.pro.coinbase.com/currencies');
-        const fullNameData = fullNamesData.find(currency => currency.id === baseCurrency).name;
-        const fullName = document.createElement('div');
-        fullName.className = 'coin-name';
-        fullName.textContent = fullNameData;
-        coinInfo.appendChild(fullName);
+    // Coin Image
+    const coinImage = document.createElement('img');
+    coinImage.src = `../images/${baseCurrency}.png`;
+    coinImage.alt = `${baseCurrency} image`;
+    coinImage.className = 'coin-image';
+    coinInfo.appendChild(coinImage);
 
-        // Coin Abbreviation
-        const abbreviation = document.createElement('div');
-        abbreviation.className = 'coin-abbreviation';
-        abbreviation.textContent = baseCurrency;
-        coinInfo.appendChild(abbreviation);
+    // Coin full name, retrieve from API then find the full name for the current base currency
+    const fullNamesData = await exchange.makeAPICall('https://api.pro.coinbase.com/currencies');
+    const fullNameData = fullNamesData.find(currency => currency.id === baseCurrency);
+    const fullName = document.createElement('div');
+    fullName.className = 'coin-name';
+    fullName.textContent = fullNameData ? fullNameData.name : baseCurrency;
+    coinInfo.appendChild(fullName);
 
-        // Fetch the trading pairs for this base currency
-        const responseData = await exchange.makeAPICall(`https://api.exchange.coinbase.com/products`);
+    // Coin abbreviation
+    const abbreviation = document.createElement('div');
+    abbreviation.className = 'coin-abbreviation';
+    abbreviation.textContent = baseCurrency;
+    coinInfo.appendChild(abbreviation);
+}
 
-        // Filter pairs that match the baseCurrency and extract quote currencies
-        const quoteCurrencies = responseData
-            .filter(pair => pair.base_currency === baseCurrency)
-            .map(pair => pair.id.split('-')[1]) // Extract the quote currency
-            .filter((value, index, self) => self.indexOf(value) === index); // Deduplicate
+// Creates the drop-down list
+async function fetchAndPopulateDropdown(baseCurrency, productId, exchange) {
+    // Fetch trading pairs
+    const responseData = await exchange.makeAPICall(`https://api.exchange.coinbase.com/products`);
 
-        // Create and populate the dropdown menu
-        const dropdownContainer = document.querySelector('.update-quote-currency-dropdown');
-        const dropdown = document.createElement('select');
-        dropdown.className = 'currency-select';
+    // Filter pairs that match the baseCurrency and extract quote currencies
+    const quoteCurrencies = responseData
+        .filter(pair => pair.base_currency === baseCurrency)
+        .map(pair => pair.id.split('-')[1])
+        .filter((value, index, self) => self.indexOf(value) === index);
 
-        // Populate dropdown so user can switch between currencies
-        quoteCurrencies.forEach(quoteCurrency => {
-            const option = document.createElement('option');
-            option.value = quoteCurrency;
-            option.textContent = quoteCurrency;
-            if (productId.endsWith(quoteCurrency)) {
-                option.selected = true;
-            }
-            dropdown.appendChild(option);
-        });
+    // Create the drop-down list
+    const dropdownContainer = document.querySelector('.update-quote-currency-dropdown');
+    const dropdown = document.createElement('select');
+    dropdown.className = 'currency-select';
 
-        // Event listener for dropdown changes
-        dropdown.addEventListener('change', function() {
-            const selectedQuoteCurrency = this.value;
-            const newProductId = `${baseCurrency}-${selectedQuoteCurrency}`;
-            window.location.href = `/chart.html?product_id=${newProductId}`;
-        });
+    // Populate the drop-down list so user can switch between currencies
+    quoteCurrencies.forEach(quoteCurrency => {
+        const option = document.createElement('option');
+        option.value = quoteCurrency;
+        option.textContent = quoteCurrency;
+        if (productId.endsWith(quoteCurrency)) {
+            option.selected = true;
+        }
+        dropdown.appendChild(option);
+    });
 
-        // Clear existing content and add the new dropdown
-        dropdownContainer.innerHTML = '';
-        dropdownContainer.appendChild(dropdown);
-        
-        // Get data for chart
-        // Default startDate = 1 year || Default granularity = 1 day 
-        const candlestickData = await exchange.fetchCandlestickData(productId,currentGranularity,currentStartDate);
+    // Event listener for drop-down changes
+    dropdown.addEventListener('change', function() {
+        const selectedQuoteCurrency = this.value;
+        const newProductId = `${baseCurrency}-${selectedQuoteCurrency}`;
+        window.location.href = `/chart.html?product_id=${newProductId}`;
+    });
+    // Clear existing content and add the new dropdown
+    dropdownContainer.innerHTML = '';
+    dropdownContainer.appendChild(dropdown);
+}
 
-        // Data format is [timestamp, price_low, price_high, price_open, price_close]
-        const processedData = candlestickData.map(d => {
-            return {
-                // Convert UNIX timestamp to JavaScript Date object 
-                x: new Date(d[0] * 1000),
-                y: d[4] // Closing price
-            };
-        }); 
-        // Define vertical line plugin
-        const verticalLinePlugin = {
-            id: 'verticalLinePlugin',
-            beforeDraw: function (chart) {
+// Configure chart options and plugins
+function setupChartOptions(processedData, quoteCurrency) {
+    const verticalLinePlugin = {
+        id: 'verticalLinePlugin',
+        beforeDraw: function(chart) {
             if (chart.tooltip._active && chart.tooltip._active.length) {
                 const ctx = chart.ctx;
                 const x = chart.tooltip._active[0].element.x;
                 const topY = chart.scales.y.top;
                 const bottomY = chart.scales.y.bottom;
                 
-                // Draw the line
                 ctx.save();
                 ctx.beginPath();
                 ctx.moveTo(x, topY);
                 ctx.lineTo(x, bottomY);
                 ctx.lineWidth = 1;
-                ctx.strokeStyle = '#007BFF'; // Blue color
+                ctx.strokeStyle = '#007BFF';
                 ctx.setLineDash([3, 3]);
                 ctx.stroke();
                 ctx.restore();
+            }
+        }
+    };
+
+    let symbol = currencySymbols[quoteCurrency];
+    // const priceDisplayElement = document.getElementById('priceDisplay');
+    let lastHoveredPrice = '';
+    // Checks for data to avoid errors when no data for chart
+    if (processedData.length === 0) {
+        symbol = '';
+        lastHoveredPrice = 'N/A';
+    } else {
+    // Set lastHoveredPrice 
+        lastHoveredPrice = `${symbol} ${new Intl.NumberFormat('en-US', { 
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 8 
+        }).format(processedData[processedData.length - 1].y)}`;
+    }
+    // Display the price of the cryptocurrency when chart renders
+    document.getElementById('priceDisplay').textContent = lastHoveredPrice;
+
+    const chartJsOptions = {
+        maintainAspectRatio: true,
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                enabled: true,
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                    label: function(context) {
+                        const price = new Intl.NumberFormat('en-US', { 
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 8
+                        }).format(context.parsed.y);
+                        document.getElementById('priceDisplay').textContent = `${symbol} ${price}`;
+                        return `${context.dataset.label}: ${symbol} ${price}`;
+                    }
                 }
             }
-        };
-
-        // Currency symbol taken from hashmap
-        let symbol = currencySymbols[quoteCurrency];
-        // Store the last hovered price, set to most recent price by default
-        let lastHoveredPrice = '';
-        // Checks for data to avoid errors when no data for chart
-        if (processedData.length === 0) {
-            symbol = '';
-            lastHoveredPrice = '0';
-        } else {
-            lastHoveredPrice = `${symbol} ${new Intl.NumberFormat('en-US', { 
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 8 
-            }).format(processedData[processedData.length - 1].y)}`;
+        },
+        onHover: (event, chartElement) => {
+            if (chartElement.length) {
+                const chart = chartElement[0].element.chart;
+                const dataIndex = chartElement[0].element.index;
+                const datasetIndex = chartElement[0].element.datasetIndex;
+                // Format the number with commas and at least two decimal places
+                const price = new Intl.NumberFormat('en-US', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 8 
+                }).format(chart.data.datasets[datasetIndex].data[dataIndex].y);
+                lastHoveredPrice = `${symbol} ${price}`; // Update the last hovered price
+                document.getElementById('priceDisplay').textContent = lastHoveredPrice;
+            } else {
+                // When not hovering over a data point, show the last hovered price
+                if (lastHoveredPrice) {
+                    document.getElementById('priceDisplay').textContent = lastHoveredPrice;
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    autoSkip: true,
+                    maxTicksLimit: 15
+                }
+            },
+            y: {
+                beginAtZero: false
+            }
         }
+    };
 
-        // Display the price of the cryptocurrency when chart renders
-        document.getElementById('priceDisplay').textContent = lastHoveredPrice;
+    return { verticalLinePlugin, chartJsOptions };
+}
 
-        // Finally, render the chart
+// Render the chart
+async function renderChart(productId) {
+    try {
+        // Update the page title 
+        document.title = `${productId} Chart`;
+
+        const baseCurrency = productId.split('-')[0];
+        const quoteCurrency = productId.split('-')[1];
+
+        // Instantiate the CoinbaseExchange class to use makeAPICall() method
+        const exchange = new CoinbaseExchange();
+
+        await populateCoinInfo(baseCurrency, exchange);
+        await fetchAndPopulateDropdown(baseCurrency, productId, exchange);
+        const processedData = await fetchChartData(productId, exchange, currentGranularity, currentStartDate);
+        const chartOptions = setupChartOptions(processedData, quoteCurrency);
+
         const ctx = document.getElementById('coinbaseChart').getContext('2d');
         myChart = new Chart(ctx, {
-            type: 'line', // Can change to 'bar' or other types
+            type: 'line',
             data: {
                 labels: processedData.map(d => formatDate(d.x)),
                 datasets: [{
@@ -186,69 +249,12 @@ async function renderChart(productId) {
                     pointRadius: 1
                 }]
             },
-            plugins: [verticalLinePlugin],
-            options: {
-                maintainAspectRatio: true,
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        enabled: true,
-                        mode: 'index',
-                        //mode: 'nearest',
-                        intersect: false,
-                        callbacks: {
-                            label: function(context) {
-                                // Retrieve y value using context.parsed.y
-                                const price = new Intl.NumberFormat('en-US', { 
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 8 
-                                }).format(context.parsed.y);
-                                document.getElementById('priceDisplay').textContent = `${symbol} ${price}`;
-                                return `${context.dataset.label}: ${symbol} ${price}`;
-                            }
-                        }
-                    }
-                },
-                // Hover configuration is directly inside the options object
-                // 'event' is not used since mouse only hovers and does not need to click
-                onHover: (event, chartElement) => {
-                    if (chartElement.length) {
-                        const chart = chartElement[0].element.chart;
-                        const dataIndex = chartElement[0].element.index;
-                        const datasetIndex = chartElement[0].element.datasetIndex;
-                        // Format the number with commas and at least two decimal places 
-                        const price = new Intl.NumberFormat('en-US', { 
-                            minimumFractionDigits: 2, 
-                            maximumFractionDigits: 8 
-                        }).format(chart.data.datasets[datasetIndex].data[dataIndex].y);
-                        lastHoveredPrice = `${symbol} ${price}`; // Update the last hovered price
-                        document.getElementById('priceDisplay').textContent = lastHoveredPrice;
-                    } else {
-                        // When not hovering over a data point, show the last hovered price
-                        if (lastHoveredPrice) {
-                            document.getElementById('priceDisplay').textContent = lastHoveredPrice;
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: {
-                            autoSkip: true,
-                            maxTicksLimit: 15 // reduce no. of ticks if overcrowded
-                        }
-                    },
-                    y: {
-                        beginAtZero: false
-                    }
-                }
-            }
+            plugins: [chartOptions.verticalLinePlugin],
+            options: chartOptions.chartJsOptions
         });
     } catch (error) {
         console.error("Error rendering chart:", error);
-        // Handle the error in the UI, e.g., show an error message
+        // Handle the error in the UI
     }
 }
 
@@ -348,7 +354,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Extract productId from the URL and executes renderChart
 const productId = new URLSearchParams(window.location.search).get('product_id');
-const quoteCurrency = productId.split('-')[1];
-if (productId) {
+try {
     renderChart(productId);
+} catch (error) {
+    console.error("Error rendering chart:", error);
+    // Handle the error in the UI, e.g., show an error message
 }

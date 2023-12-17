@@ -89,7 +89,8 @@ function createCurrencyCard(baseCurrency, fullName, defaultPair, price) {
     // Append the price to the text container
     const priceElement = document.createElement('div');
     priceElement.className = 'currency-price';
-    // format price to use commas 
+
+    // Format price to use commas as separator
     const formattedPrice = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
