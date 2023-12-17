@@ -30,7 +30,7 @@ body, html {
     border-bottom: 3px solid #f7f7f7; /* Adding a border for a touch of color */
     text-transform: uppercase; /* Make the text uppercase for impact */
     letter-spacing: 1.5px; /* Increase letter spacing for a modern look */
-    text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); /* Text shadow for a subtle 3D effect */
+    text-shadow: 7px 7px 7px rgba(0, 0, 0, 0.3); /* Text shadow for a subtle 3D effect */
     cursor: default;
 }
 /* chart page header style */
@@ -191,6 +191,12 @@ input[type="search"]::-webkit-search-results-decoration {
     font-size: 1em;
     margin-top: 10px;
     color: #c0c0c0;
+}
+.currency-price {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+    font-size: 1em;
+    margin-top: 10px;
+    color: #e6e6e6;
 }
 
 /* chart style */
