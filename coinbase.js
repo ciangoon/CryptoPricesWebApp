@@ -31,7 +31,7 @@ class CoinbaseExchange extends Exchange {
         
         let segmentPromises = [];
 
-        // Loop through the time range in chunks
+        // Loop through the time range in segments
         for (let segmentStart = startTime; segmentStart < endTime; segmentStart += maxRange) {
             let segmentEnd = Math.min(segmentStart + maxRange, endTime);
     

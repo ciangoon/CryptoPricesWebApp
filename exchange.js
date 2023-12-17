@@ -18,14 +18,6 @@ class Exchange {
             }
         }
     }
-
-    async fetchTradingPairs() {
-        throw new Error("fetchTradingPairs() method must be implemented");
-    }
-
-    async fetchCandlestickData() {
-        throw new Error("fetchCandlestickData() method must be implemented");
-    }
     
     // Add more common methods or properties if required
     // i.e fetch order book, place order, cancel order 

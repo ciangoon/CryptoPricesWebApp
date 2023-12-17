@@ -35,7 +35,7 @@ function formatDate(date) {
 // Define myChart globally so can be accessed by updateChart()
 let myChart;
 
-// Initialise global granularity variable and global start variable
+// Initialise global granularity and start variable
 // So can be accessed by both event listeners
 let currentGranularity = 86400; // Default to 1 day
 let currentEndDate = new Date();
@@ -121,6 +121,7 @@ async function fetchAndPopulateDropdown(baseCurrency, productId, exchange) {
 
 // Configure chart options and plugins
 function setupChartOptions(processedData, quoteCurrency) {
+    // Vertical Line 
     const verticalLinePlugin = {
         id: 'verticalLinePlugin',
         beforeDraw: function(chart) {
@@ -144,7 +145,7 @@ function setupChartOptions(processedData, quoteCurrency) {
     };
 
     let symbol = currencySymbols[quoteCurrency];
-    // const priceDisplayElement = document.getElementById('priceDisplay');
+    
     let lastHoveredPrice = '';
     // Checks for data to avoid errors when no data for chart
     if (processedData.length === 0) {
@@ -157,7 +158,7 @@ function setupChartOptions(processedData, quoteCurrency) {
             maximumFractionDigits: 8 
         }).format(processedData[processedData.length - 1].y)}`;
     }
-    // Display the price of the cryptocurrency when chart renders
+    // Display the price of the asset when chart renders
     document.getElementById('priceDisplay').textContent = lastHoveredPrice;
 
     const chartJsOptions = {

@@ -15,7 +15,7 @@ async function fetchPricesInBatch(batch) {
             .then(data => [baseCurrency, data.price])
             .catch(error => {
                 console.error(`Error fetching price for ${baseCurrency}:`, error);
-                return [baseCurrency, 0]; // Return price of 0 if there is an error
+                return [baseCurrency, 0]; // Return price of 0 if unavailable
             })
     ));
 }
@@ -134,11 +134,11 @@ function sortCards() {
 
     switch(sortValue) {
         case 'priceAsc':
-            // Sorting by price in ascending order
+            // Sort by price in ascending order
             cards.sort((a, b) => parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price')));
             break;
         case 'priceDesc':
-            // Sorting by price in descending order
+            // Sort by price in descending order
             cards.sort((a, b) => parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price')));
             break;
         case 'alpha':

@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const path = require('path');
 const app = express();
@@ -32,15 +31,17 @@ app.use('/main.js', (req, res, next) => {
   next();
 }, express.static('main.js'));
 
-
+// Load index.html upon visiting the root URL
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, public, 'index.html'));
 });
 
+// Load chart.html upon visiting the /chart.html URL
 app.get('/chart.html', (req, res) => {
   res.sendFile(path.join(__dirname, public, 'chart.html'));
 });
 
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
