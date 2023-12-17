@@ -170,6 +170,7 @@ input[type="search"]::-webkit-search-results-decoration {
     max-height: 80px; /* Set a max-height for the image */
     margin-right: 10px; /* Space between image and text */
     object-fit: contain; /* Keep aspect ratio */
+    margin-left: 10px;
 }
 .currency-text {
     display: flex;
