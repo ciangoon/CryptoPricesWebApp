@@ -54,8 +54,11 @@ async function fetchChartData(productId, exchange, currentGranularity, currentSt
     }));
 }
 
-// Populate the coin info section
-async function populateCoinInfo(baseCurrency, exchange) {
+// Creates the drop-down list
+async function populateCoinInfoAndDropdown(baseCurrency, productId, exchange) {
+    // Fetch trading pairs
+    const responseData = await exchange.makeAPICall(`https://api.exchange.coinbase.com/products/`);
+    // Populate coin info 
     const coinInfo = document.querySelector('.coin-info');
     coinInfo.innerHTML = '';
 
@@ -66,9 +69,8 @@ async function populateCoinInfo(baseCurrency, exchange) {
     coinImage.className = 'coin-image';
     coinInfo.appendChild(coinImage);
 
-    // Coin full name, retrieve from API then find the full name for the current base currency
-    const fullNamesData = await exchange.makeAPICall('https://api.pro.coinbase.com/currencies');
-    const fullNameData = fullNamesData.find(currency => currency.id === baseCurrency);
+    // Add coin name to coin section
+    const fullNameData = responseData.find(currency => currency.id === baseCurrency);
     const fullName = document.createElement('div');
     fullName.className = 'coin-name';
     fullName.textContent = fullNameData ? fullNameData.name : baseCurrency;
@@ -79,12 +81,6 @@ async function populateCoinInfo(baseCurrency, exchange) {
     abbreviation.className = 'coin-abbreviation';
     abbreviation.textContent = baseCurrency;
     coinInfo.appendChild(abbreviation);
-}
-
-// Creates the drop-down list
-async function fetchAndPopulateDropdown(baseCurrency, productId, exchange) {
-    // Fetch trading pairs
-    const responseData = await exchange.makeAPICall(`https://api.exchange.coinbase.com/products`);
 
     // Filter pairs that match the baseCurrency and extract quote currencies
     const quoteCurrencies = responseData
@@ -231,8 +227,7 @@ async function renderChart(productId) {
         // Instantiate the CoinbaseExchange class to use makeAPICall() method
         const exchange = new CoinbaseExchange();
 
-        await populateCoinInfo(baseCurrency, exchange);
-        await fetchAndPopulateDropdown(baseCurrency, productId, exchange);
+        await populateCoinInfoAndDropdown(baseCurrency, productId, exchange);
         const processedData = await fetchChartData(productId, exchange, currentGranularity, currentStartDate);
         const chartOptions = setupChartOptions(processedData, quoteCurrency);
 
@@ -348,7 +343,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Call updateChart with the new start date and current granularity value
             updateChart(currentGranularity, currentStartDate);
-            // console.log("Updating chart with granularity:", currentGranularity, "and start:", startISO);
         });
     });
 });

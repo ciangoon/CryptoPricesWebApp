@@ -167,7 +167,7 @@ const exchange = new CoinbaseExchange();
 
 // This starts loading the page as soon as it is opened
 // First retrieves full names for each currency i.e BTC -> Bitcoin
-exchange.makeAPICall('https://api.pro.coinbase.com/currencies')
+exchange.makeAPICall('https://api.exchange.coinbase.com/currencies')
   .then(async data => {
     const fullNamesMap = data.reduce((map, currency) => {
       map[currency.id] = currency.name;

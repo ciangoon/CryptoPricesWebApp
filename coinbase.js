@@ -25,7 +25,6 @@ class CoinbaseExchange extends Exchange {
         const endTime = new Date(end).getTime();
         // Define the URL for the API call
         const baseUrl = `https://api.exchange.coinbase.com/products/${productId}/candles?granularity=${granularity}&start=START_PLACEHOLDER&end=END_PLACEHOLDER`;
-
         // Maximum time range that can be covered in one request (300 candles)
         const maxRange = granularityMs * 300;
         
@@ -38,7 +37,6 @@ class CoinbaseExchange extends Exchange {
             const segmentStartISO = new Date(segmentStart).toISOString();
             const segmentEndISO = new Date(segmentEnd).toISOString();
             const segmentUrl = baseUrl.replace('START_PLACEHOLDER', segmentStartISO).replace('END_PLACEHOLDER', segmentEndISO);
-            
             // Instead of awaiting here, push the promise into the array
             segmentPromises.push(this.makeAPICall(segmentUrl));
         }
