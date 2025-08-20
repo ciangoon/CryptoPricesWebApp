@@ -58,7 +58,7 @@ function createCurrencyCard(baseCurrency, fullName, defaultPair, price) {
     // Create and append the image element
     const image = document.createElement('img');
     image.className = 'currency-image';
-    image.src = `../images/${baseCurrency}.png`; // Path to the image
+    image.src = `/images/${baseCurrency}.png`; // Path to the image
     image.alt = `${baseCurrency} image`; // Alt text for the image
     card.appendChild(image);
 

@@ -64,7 +64,7 @@ async function populateCoinInfoAndDropdown(baseCurrency, productId, exchange) {
 
     // Coin Image
     const coinImage = document.createElement('img');
-    coinImage.src = `../images/${baseCurrency}.png`;
+    coinImage.src = `/images/${baseCurrency}.png`;
     coinImage.alt = `${baseCurrency} image`;
     coinImage.className = 'coin-image';
     coinInfo.appendChild(coinImage);
